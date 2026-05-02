@@ -1,0 +1,4 @@
+model,RMSE,MAPE_pct,n_folds,mean_actual,mean_predicted,std_residual
+"ARIMA(2,1,2)",6.0608,6.39,54,74.1,73.72,6.05
+Prophet,25.5465,32.01,54,74.1,72.65,25.51
+RandomForest,5.2151,6.01,50,71.42,71.49,5.21
