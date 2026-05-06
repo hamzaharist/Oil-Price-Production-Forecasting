@@ -4,6 +4,9 @@
 import sys, os, warnings
 warnings.filterwarnings("ignore")
 
+from dotenv import load_dotenv
+load_dotenv()
+
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
@@ -640,6 +643,32 @@ fig_raw.update_layout(**PLOT_LAYOUT, height=500, showlegend=True)
 fig_raw.update_annotations(font=dict(color="#1e293b", size=13))
 st.plotly_chart(fig_raw, use_container_width=True)
 
+# --- Macroeconomic & Global Indicators ---
+st.markdown('<div class="section-header"><i class="bx bx-globe" style="margin-right: 6px;"></i> Macroeconomic & Global Indicators</div>', unsafe_allow_html=True)
+
+if "usd_index" in df_raw.columns:
+    fig_macro = make_subplots(rows=2, cols=2, vertical_spacing=0.15,
+                            subplot_titles=("U.S. Real GDP Index", "Trade Weighted USD Index", 
+                                            "Inventory Levels (Mbbl)", "Fed Funds Rate (%)"))
+
+    # Real GDP
+    if "real_gdp" in df_raw.columns:
+        fig_macro.add_trace(go.Scatter(x=df_raw.index, y=df_raw["real_gdp"], name="Real GDP", line=dict(color="#60a5fa")), row=1, col=1)
+    
+    # USD Index
+    fig_macro.add_trace(go.Scatter(x=df_raw.index, y=df_raw["usd_index"], name="USD Index", line=dict(color="#f87171")), row=1, col=2)
+    
+    # Inventories
+    if "inventory_commercial" in df_raw.columns:
+        fig_macro.add_trace(go.Scatter(x=df_raw.index, y=df_raw["inventory_commercial"], name="Comm. Inventory", fill='tozeroy', line=dict(color="#34d399")), row=2, col=1)
+    
+    # Fed Funds
+    if "fed_funds_rate" in df_raw.columns:
+        fig_macro.add_trace(go.Scatter(x=df_raw.index, y=df_raw["fed_funds_rate"], name="Fed Funds", line=dict(color="#fb923c")), row=2, col=2)
+
+    fig_macro.update_layout(**PLOT_LAYOUT, height=600, showlegend=False)
+    st.plotly_chart(fig_macro, use_container_width=True)
+
 # --- Backtest results ---
 st.markdown('<div class="section-header"><i class="bx bx-history" style="margin-right: 6px;"></i> Rolling Backtest — Actual vs Predicted</div>', unsafe_allow_html=True)
 
@@ -824,7 +853,7 @@ with st.expander("⚙️ View Technical Model Diagnostics"):
 st.markdown("---")
 st.markdown(
     '<p style="text-align:center; color:#5a7a9a; font-size:0.75rem;">'
-    'Oil Price & Production Forecasting Dashboard — Data: Yahoo Finance (yfinance) + EIA synthetic'
+    'Oil Price & Production Forecasting Dashboard — Data Sources: Yahoo Finance, EIA Open Data, FRED, and World Bank'
     '</p>',
     unsafe_allow_html=True
 )

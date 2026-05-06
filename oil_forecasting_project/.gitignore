@@ -23,3 +23,6 @@ data/
 
 # Jupyter
 .ipynb_checkpoints/
+
+# Environment / secrets
+.env
